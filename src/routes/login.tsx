@@ -1,9 +1,9 @@
 import { useNavigate } from '@tanstack/react-router'
 import { GoogleLogin } from '@react-oauth/google'
 import { jwtDecode } from 'jwt-decode'
-import { useAuth } from '../integrations/auth/auth-provider'
 import { useState } from 'react'
 import { useMutation } from 'convex/react'
+import { useAuth } from '../integrations/auth/auth-provider'
 import { api } from '../../convex/_generated/api'
 
 export function LoginPage() {

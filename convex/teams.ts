@@ -89,7 +89,7 @@ export const updateFormation = mutation({
     playerPositions: v.array(
       v.object({
         playerId: v.id('players'),
-        position: v.union(v.null(), v.object({ x: v.number(), y: v.number() }))
+        position: v.object({ x: v.number(), y: v.number() })
       })
     )
   },
@@ -97,6 +97,24 @@ export const updateFormation = mutation({
     const team = await ctx.db.get(args.teamId);
     if (!team) {
       throw new Error('Team not found');
+    }
+    
+    // First update the team's formation
+    await ctx.db.patch(args.teamId, {
+      formation: args.formation
+    });
+
+    // Then update each player's position
+    for (const { playerId, position } of args.playerPositions) {
+      const player = await ctx.db.get(playerId);
+      if (!player) {
+        console.error(`Player ${playerId} not found`);
+        continue;
+      }
+
+      await ctx.db.patch(playerId, {
+        formationPosition: position
+      });
     }
 
     await ctx.db.patch(args.teamId, {

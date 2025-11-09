@@ -1,5 +1,17 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import {
+  ChevronDown,
+  ChevronRight,
+  Database,
+  Globe,
+  Home,
+  Menu,
+  Network,
+  SquareFunction,
+  StickyNote,
+  X,
+} from 'lucide-react'
 import { useAuth } from '../integrations/auth/auth-provider'
 
 function AuthButtons() {
@@ -40,18 +52,6 @@ function AuthButtons() {
     </div>
   );
 }
-import {
-  ChevronDown,
-  ChevronRight,
-  Database,
-  Globe,
-  Home,
-  Menu,
-  Network,
-  SquareFunction,
-  StickyNote,
-  X,
-} from 'lucide-react'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)

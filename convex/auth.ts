@@ -1,6 +1,6 @@
-import { v } from 'convex/values';
+import { ConvexError, v  } from 'convex/values';
 import { mutation } from './_generated/server';
-import { ConvexError } from 'convex/values';
+
 
 // Helper function to hash password (in a real app, use a proper crypto library)
 async function hashPassword(password: string, salt: string): Promise<string> {

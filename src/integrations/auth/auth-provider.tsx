@@ -1,5 +1,6 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface AuthContextType {
   user: any | null;

@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useAuth } from '../integrations/auth/auth-provider'
 import { useMutation, useQuery } from 'convex/react'
+import { useAuth } from '../integrations/auth/auth-provider'
 import { api } from '../../convex/_generated/api'
-import { Id } from '../../convex/_generated/dataModel'
+import type { Id } from '../../convex/_generated/dataModel'
 
 type Sport = 'badminton' | 'volleyball' | 'football'
 type Position = { x: number; y: number }
@@ -31,44 +31,56 @@ interface Team {
   formation?: string
 }
 
-const sportPositions: Record<Sport, string[]> = {
+const sportPositions: Record<Sport, Array<string>> = {
   badminton: ['Singles', 'Doubles Front', 'Doubles Back'],
   volleyball: ['Setter', 'Outside Hitter', 'Middle Blocker', 'Opposite', 'Libero'],
   football: ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'],
 }
 
-const formations: Record<Sport, string[]> = {
+const formations: Record<Sport, Array<string>> = {
   badminton: ['Singles', '2-Player'],
   volleyball: ['6-Player Standard', '5-1', '4-2'],
   football: ['4-4-2', '4-3-3', '3-5-2'],
 }
 
-const formationPositions: Record<string, Position[]> = {
-  'Singles': [{ x: 50, y: 50 }],
-  '2-Player': [{ x: 30, y: 50 }, { x: 70, y: 50 }],
-  '6-Player Standard': [
-    { x: 20, y: 30 }, { x: 40, y: 30 }, { x: 60, y: 30 },
-    { x: 20, y: 70 }, { x: 40, y: 70 }, { x: 60, y: 70 }
-  ],
-  '5-1': [
-    { x: 30, y: 30 }, { x: 50, y: 30 }, { x: 70, y: 30 },
-    { x: 30, y: 70 }, { x: 50, y: 70 }, { x: 70, y: 70 }
-  ],
-  '4-4-2': [
-    { x: 20, y: 20 }, { x: 40, y: 20 }, { x: 60, y: 20 }, { x: 80, y: 20 },
-    { x: 20, y: 50 }, { x: 40, y: 50 }, { x: 60, y: 50 }, { x: 80, y: 50 },
-    { x: 30, y: 80 }, { x: 70, y: 80 }
-  ],
-  '4-3-3': [
-    { x: 20, y: 20 }, { x: 40, y: 20 }, { x: 60, y: 20 }, { x: 80, y: 20 },
-    { x: 30, y: 50 }, { x: 50, y: 50 }, { x: 70, y: 50 },
-    { x: 25, y: 80 }, { x: 50, y: 80 }, { x: 75, y: 80 }
-  ],
-  '3-5-2': [
-    { x: 30, y: 20 }, { x: 50, y: 20 }, { x: 70, y: 20 },
-    { x: 20, y: 50 }, { x: 35, y: 50 }, { x: 50, y: 50 }, { x: 65, y: 50 }, { x: 80, y: 50 },
-    { x: 35, y: 80 }, { x: 65, y: 80 }
-  ]
+const formationPositions: Record<string, Record<string, Array<Position>>> = {
+  'Singles': {
+    'Singles': [{ x: 50, y: 50 }]
+  },
+  '2-Player': {
+    'Doubles Front': [{ x: 30, y: 50 }],
+    'Doubles Back': [{ x: 70, y: 50 }]
+  },
+  '6-Player Standard': {
+    'Outside Hitter': [{ x: 20, y: 30 }, { x: 20, y: 70 }],
+    'Middle Blocker': [{ x: 40, y: 30 }, { x: 40, y: 70 }],
+    'Setter': [{ x: 60, y: 30 }],
+    'Opposite': [{ x: 60, y: 70 }]
+  },
+  '5-1': {
+    'Outside Hitter': [{ x: 30, y: 30 }, { x: 30, y: 70 }],
+    'Middle Blocker': [{ x: 50, y: 30 }, { x: 50, y: 70 }],
+    'Setter': [{ x: 70, y: 30 }],
+    'Opposite': [{ x: 70, y: 70 }]
+  },
+  '4-4-2': {
+    'Goalkeeper': [{ x: 50, y: 10 }],
+    'Defender': [{ x: 20, y: 25 }, { x: 40, y: 25 }, { x: 60, y: 25 }, { x: 80, y: 25 }],
+    'Midfielder': [{ x: 20, y: 55 }, { x: 40, y: 55 }, { x: 60, y: 55 }, { x: 80, y: 55 }],
+    'Forward': [{ x: 35, y: 85 }, { x: 65, y: 85 }]
+  },
+  '4-3-3': {
+    'Goalkeeper': [{ x: 50, y: 10 }],
+    'Defender': [{ x: 20, y: 25 }, { x: 40, y: 25 }, { x: 60, y: 25 }, { x: 80, y: 25 }],
+    'Midfielder': [{ x: 30, y: 55 }, { x: 50, y: 55 }, { x: 70, y: 55 }],
+    'Forward': [{ x: 25, y: 85 }, { x: 50, y: 85 }, { x: 75, y: 85 }]
+  },
+  '3-5-2': {
+    'Goalkeeper': [{ x: 50, y: 10 }],
+    'Defender': [{ x: 30, y: 25 }, { x: 50, y: 25 }, { x: 70, y: 25 }],
+    'Midfielder': [{ x: 20, y: 55 }, { x: 35, y: 55 }, { x: 50, y: 55 }, { x: 65, y: 55 }, { x: 80, y: 55 }],
+    'Forward': [{ x: 40, y: 85 }, { x: 60, y: 85 }]
+  }
 }
 
 interface EditPlayerData {
@@ -95,17 +107,40 @@ export function HomePage() {
   const updatePlayer = useMutation(api.teams.updatePlayer)
 
   const arrangePlayersInFormation = async (formation: string) => {
-    const nonSubstitutes = players?.filter(p => !p.isSubstitute) ?? []
-    const positions = formationPositions[formation] ?? []
+    if (!selectedTeam) return
     
-    // Update positions for all non-substitute players
-    for (let i = 0; i < nonSubstitutes.length && i < positions.length; i++) {
-      await updatePlayerPosition({
-        teamId: selectedTeam!._id,
-        playerId: nonSubstitutes[i]._id,
-        position: positions[i]
+    const nonSubstitutes = players?.filter(p => !p.isSubstitute) ?? []
+    const positionMap = formationPositions[formation]
+
+    // Group players by their position
+    const playersByPosition = nonSubstitutes.reduce((acc, player) => {
+      const position = player.position
+      acc[position] = acc[position] ?? []
+      acc[position].push(player)
+      return acc
+    }, {} as { [key: string]: Array<Player> })
+
+    // Assign formation positions based on player position
+    const playerPositions: Array<{ playerId: Id<'players'>; position: Position }> = []
+
+    Object.entries(positionMap).forEach(([positionName, positions]) => {
+      const playersForPosition = playersByPosition[positionName]
+      playersForPosition.forEach((player, index) => {
+        if (index < positions.length) {
+          playerPositions.push({
+            playerId: player._id,
+            position: positions[index]
+          })
+        }
       })
-    }
+    })
+
+    // Update formation and positions in a single mutation
+    await updateFormation({
+      teamId: selectedTeam._id,
+      formation: formation,
+      playerPositions
+    })
   }
 
   const teams = useQuery(api.teams.getTeams, { ownerId: user?.id ?? '' })
@@ -145,7 +180,7 @@ export function HomePage() {
                 {teams?.map((team) => (
                   <button
                     key={team._id}
-                    onClick={() => setSelectedTeam(team)}
+                    onClick={() => setSelectedTeam({ ...team, sport: team.sport as Sport })}
                     className={`w-full text-left p-3 rounded ${
                       selectedTeam?._id === team._id
                         ? 'bg-blue-100 border-blue-500'
@@ -186,8 +221,24 @@ export function HomePage() {
                           {player.position}
                         </div>
                       </div>
-                      <div className="text-sm">
-                        {player.isSubstitute ? 'Substitute' : 'Starting'}
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm">
+                          {player.isSubstitute ? 'Substitute' : 'Starting'}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setEditPlayer({
+                              playerId: player._id,
+                              name: player.name,
+                              position: player.position,
+                              number: player.number,
+                              isSubstitute: player.isSubstitute
+                            })
+                          }}
+                          className="text-blue-500 hover:text-blue-700 text-sm font-medium"
+                        >
+                          Edit
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -214,17 +265,13 @@ export function HomePage() {
                       const formation = e.target.value
                       setSelectedFormation(formation)
                       if (formation) {
-                        await updateFormation({
-                          teamId: selectedTeam._id,
-                          formation: formation,
-                        })
                         await arrangePlayersInFormation(formation)
                       }
                     }}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">Select Formation</option>
-                    {formations[selectedTeam.sport]?.map((formation) => (
+                    {formations[selectedTeam.sport].map((formation) => (
                       <option key={formation} value={formation}>
                         {formation}
                       </option>
@@ -259,7 +306,7 @@ export function HomePage() {
                     <div
                       key={player._id}
                       draggable
-                      onDragStart={(e) => {
+                      onDragStart={() => {
                         setDraggingPlayer({
                           type: 'PLAYER',
                           id: player._id,
@@ -302,7 +349,7 @@ export function HomePage() {
                         <div
                           key={player._id}
                           draggable
-                          onDragStart={(e) => {
+                          onDragStart={() => {
                             setDraggingPlayer({
                               type: 'PLAYER',
                               id: player._id,
