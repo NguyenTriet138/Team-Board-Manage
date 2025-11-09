@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TeamsRouteRouteImport } from './routes/teams.route'
 import { Route as SignupRouteRouteImport } from './routes/signup.route'
 import { Route as LoginRouteRouteImport } from './routes/login.route'
 import { Route as HomeRouteRouteImport } from './routes/home.route'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TeamsRouteRoute = TeamsRouteRouteImport.update({
+  id: '/teams',
+  path: '/teams',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRouteRoute = SignupRouteRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRouteRoute
   '/login': typeof LoginRouteRoute
   '/signup': typeof SignupRouteRoute
+  '/teams': typeof TeamsRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRouteRoute
   '/login': typeof LoginRouteRoute
   '/signup': typeof SignupRouteRoute
+  '/teams': typeof TeamsRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/home': typeof HomeRouteRoute
   '/login': typeof LoginRouteRoute
   '/signup': typeof SignupRouteRoute
+  '/teams': typeof TeamsRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login' | '/signup'
+  fullPaths: '/' | '/home' | '/login' | '/signup' | '/teams'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login' | '/signup'
-  id: '__root__' | '/' | '/home' | '/login' | '/signup'
+  to: '/' | '/home' | '/login' | '/signup' | '/teams'
+  id: '__root__' | '/' | '/home' | '/login' | '/signup' | '/teams'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   HomeRouteRoute: typeof HomeRouteRoute
   LoginRouteRoute: typeof LoginRouteRoute
   SignupRouteRoute: typeof SignupRouteRoute
+  TeamsRouteRoute: typeof TeamsRouteRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/teams': {
+      id: '/teams'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof TeamsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRouteRoute: HomeRouteRoute,
   LoginRouteRoute: LoginRouteRoute,
   SignupRouteRoute: SignupRouteRoute,
+  TeamsRouteRoute: TeamsRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

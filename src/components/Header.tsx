@@ -1,15 +1,9 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import {
-  ChevronDown,
-  ChevronRight,
   Database,
-  Globe,
   Home,
   Menu,
-  Network,
-  SquareFunction,
-  StickyNote,
   X,
 } from 'lucide-react'
 import { useAuth } from '../integrations/auth/auth-provider'
@@ -55,13 +49,35 @@ function AuthButtons() {
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const [groupedExpanded, setGroupedExpanded] = useState<
-    Record<string, boolean>
-  >({})
 
   return (
     <>
       <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 hover:bg-gray-700 rounded-lg transition-colors mr-4"
+          aria-label="Toggle menu"
+        >
+          <Menu size={24} />
+        </button>
+
+        <div className="flex items-center gap-6">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <Home size={20} />
+            <span className="font-medium">Formation Setup</span>
+          </Link>
+          <Link
+            to="/teams"
+            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <Database size={20} />
+            <span className="font-medium">Team Management</span>
+          </Link>
+        </div>
+
         <div className="ml-auto">
           <AuthButtons />
         </div>
@@ -84,32 +100,24 @@ export default function Header() {
         </div>
 
         <nav className="flex-1 p-4 overflow-y-auto">
-
-          {/* Demo Links Start */}
-
-          <div className="flex flex-row justify-between">
-            <button
-              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-              onClick={() =>
-                setGroupedExpanded((prev) => ({
-                  ...prev,
-                  StartSSRDemo: !prev.StartSSRDemo,
-                }))
-              }
+          <div className="space-y-2">
+            <Link
+              to="/"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition-colors"
             >
-              {groupedExpanded.StartSSRDemo ? (
-                <ChevronDown size={20} />
-              ) : (
-                <ChevronRight size={20} />
-              )}
-            </button>
+              <Home size={20} />
+              <span>Formation Setup</span>
+            </Link>
+            <Link
+              to="/teams"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <Database size={20} />
+              <span>Team Management</span>
+            </Link>
           </div>
-          {groupedExpanded.StartSSRDemo && (
-            <div className="flex flex-col ml-4">
-            </div>
-          )}
-
-          {/* Demo Links End */}
         </nav>
       </aside>
     </>

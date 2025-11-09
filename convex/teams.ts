@@ -45,6 +45,47 @@ export const updatePlayerPosition = mutation({
   }
 });
 
+export const togglePlayerSubstituteStatus = mutation({
+  args: {
+    playerId: v.id('players'),
+    isSubstitute: v.boolean(),
+    position: v.optional(v.object({
+      x: v.number(),
+      y: v.number()
+    }))
+  },
+  handler: async (ctx, args) => {
+    const player = await ctx.db.get(args.playerId);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+
+    const updateData: any = {
+      isSubstitute: args.isSubstitute
+    };
+
+    if (args.position) {
+      updateData.formationPosition = args.position;
+    }
+
+    await ctx.db.patch(args.playerId, updateData);
+  }
+});
+
+export const deletePlayer = mutation({
+  args: {
+    playerId: v.id('players')
+  },
+  handler: async (ctx, args) => {
+    const player = await ctx.db.get(args.playerId);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+
+    await ctx.db.delete(args.playerId);
+  }
+});
+
 export const createTeam = mutation({
   args: {
     name: v.string(),
