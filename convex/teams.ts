@@ -1,6 +1,41 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
+export const generateUploadUrl = mutation(async (ctx) => {
+  return await ctx.storage.generateUploadUrl();
+});
+
+export const updatePlayerAvatar = mutation({
+  args: {
+    playerId: v.id('players'),
+    avatarStorageId: v.id('_storage'),
+  },
+  handler: async (ctx, args) => {
+    const player = await ctx.db.get(args.playerId);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+
+    // Delete old avatar if it exists
+    if (player.avatarStorageId) {
+      await ctx.storage.delete(player.avatarStorageId);
+    }
+
+    await ctx.db.patch(args.playerId, {
+      avatarStorageId: args.avatarStorageId,
+    });
+  },
+});
+
+export const getAvatarUrl = query({
+  args: {
+    storageId: v.id('_storage'),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
 export const updatePlayer = mutation({
   args: {
     playerId: v.id('players'),
@@ -110,6 +145,7 @@ export const addPlayer = mutation({
     position: v.string(),
     number: v.number(),
     isSubstitute: v.boolean(),
+    avatarStorageId: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
     const playerId = await ctx.db.insert('players', {
@@ -118,6 +154,7 @@ export const addPlayer = mutation({
       position: args.position,
       number: args.number,
       isSubstitute: args.isSubstitute,
+      avatarStorageId: args.avatarStorageId,
     });
     return playerId;
   },

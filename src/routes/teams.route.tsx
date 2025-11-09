@@ -14,6 +14,7 @@ interface Player {
   number: number
   isSubstitute: boolean
   teamId: Id<'teams'>
+  avatarStorageId?: Id<'_storage'>
 }
 
 interface Team {
@@ -29,6 +30,7 @@ interface EditPlayerData {
   position: string
   number: number
   isSubstitute: boolean
+  avatarStorageId?: Id<'_storage'>
 }
 
 const sportPositions: Record<Sport, Array<string>> = {
@@ -50,6 +52,8 @@ export function TeamsPage() {
   const addPlayer = useMutation(api.teams.addPlayer)
   const updatePlayer = useMutation(api.teams.updatePlayer)
   const deletePlayer = useMutation(api.teams.deletePlayer)
+  const generateUploadUrl = useMutation(api.teams.generateUploadUrl)
+  const updatePlayerAvatar = useMutation(api.teams.updatePlayerAvatar)
 
   const teams = useQuery(api.teams.getTeams, { ownerId: user?.id ?? '' })
 
@@ -111,7 +115,8 @@ export function TeamsPage() {
                   name: player.name,
                   position: player.position,
                   number: player.number,
-                  isSubstitute: player.isSubstitute
+                  isSubstitute: player.isSubstitute,
+                  avatarStorageId: player.avatarStorageId
                 })
               }}
               onDeletePlayer={(playerId: Id<'players'>) => {
@@ -153,6 +158,7 @@ export function TeamsPage() {
             setShowPlayerForm(false)
             setSelectedTeamForPlayer(null)
           }}
+          generateUploadUrl={generateUploadUrl}
         />
       )}
 
@@ -179,6 +185,8 @@ export function TeamsPage() {
             setSelectedTeamForPlayer(null)
           }}
           onChange={setEditPlayer}
+          generateUploadUrl={generateUploadUrl}
+          updatePlayerAvatar={updatePlayerAvatar}
         />
       )}
 
@@ -328,11 +336,29 @@ function PlayerCard({
   onEdit: (player: Player) => void
   onDelete: (playerId: Id<'players'>) => void
 }) {
+  const avatarUrl = useQuery(
+    api.teams.getAvatarUrl,
+    player.avatarStorageId ? { storageId: player.avatarStorageId } : "skip"
+  )
+
   return (
     <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
       <div className="flex items-center gap-4">
-        <div className="bg-white border-2 border-blue-500 rounded-full w-14 h-14 flex items-center justify-center font-bold text-xl text-blue-600 shadow-md">
-          {player.number}
+        <div className="relative">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={player.name}
+              className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-md"
+            />
+          ) : (
+            <div className="bg-white border-2 border-blue-500 rounded-full w-14 h-14 flex items-center justify-center font-bold text-xl text-blue-600 shadow-md">
+              {player.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-white">
+            {player.number}
+          </div>
         </div>
         <div>
           <div className="font-semibold text-gray-800 text-lg">{player.name}</div>
@@ -428,22 +454,86 @@ function NewTeamModal({
 function NewPlayerModal({
   sport,
   onClose,
-  onCreate
+  onCreate,
+  generateUploadUrl
 }: {
   sport: Sport
   onClose: () => void
-  onCreate: (data: { name: string; position: string; number: number; isSubstitute: boolean }) => void
+  onCreate: (data: { name: string; position: string; number: number; isSubstitute: boolean; avatarStorageId?: Id<'_storage'> }) => void
+  generateUploadUrl: () => Promise<string>
 }) {
   const [name, setName] = useState('')
   const [position, setPosition] = useState(sportPositions[sport][0])
   const [number, setNumber] = useState(1)
   const [isSubstitute, setIsSubstitute] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setAvatarFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCreate = async () => {
+    if (!name.trim()) return
+
+    setUploading(true)
+    try {
+      let avatarStorageId: Id<'_storage'> | undefined
+
+      if (avatarFile) {
+        const uploadUrl = await generateUploadUrl()
+        const result = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': avatarFile.type },
+          body: avatarFile,
+        })
+        const { storageId } = await result.json()
+        avatarStorageId = storageId
+      }
+
+      await onCreate({ name, position, number, isSubstitute, avatarStorageId })
+    } finally {
+      setUploading(false)
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl">
+      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl max-h-[90vh] overflow-y-auto">
         <h3 className="text-xl font-bold mb-4">Add New Member</h3>
         <div className="space-y-4">
+          {/* Avatar Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl text-gray-400">👤</span>
+                )}
+              </div>
+              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border-2 border-gray-300 text-sm font-medium text-gray-700 transition-all">
+                Choose Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Player Name</label>
             <input
@@ -494,19 +584,16 @@ function NewPlayerModal({
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+              disabled={uploading}
             >
               Cancel
             </button>
             <button
-              onClick={() => {
-                if (name.trim()) {
-                  onCreate({ name, position, number, isSubstitute })
-                }
-              }}
-              disabled={!name.trim()}
+              onClick={handleCreate}
+              disabled={!name.trim() || uploading}
               className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
             >
-              Add Member
+              {uploading ? 'Uploading...' : 'Add Member'}
             </button>
           </div>
         </div>
@@ -520,19 +607,93 @@ function EditPlayerModal({
   sport,
   onClose,
   onSave,
-  onChange
+  onChange,
+  generateUploadUrl,
+  updatePlayerAvatar
 }: {
   editPlayer: EditPlayerData
   sport: Sport
   onClose: () => void
   onSave: () => void
   onChange: (data: EditPlayerData) => void
+  generateUploadUrl: () => Promise<string>
+  updatePlayerAvatar: (args: { playerId: Id<'players'>; avatarStorageId: Id<'_storage'> }) => Promise<any>
 }) {
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const currentAvatarUrl = useQuery(
+    api.teams.getAvatarUrl,
+    editPlayer.avatarStorageId ? { storageId: editPlayer.avatarStorageId } : "skip"
+  )
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setAvatarFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleSave = async () => {
+    setUploading(true)
+    try {
+      // Upload new avatar if selected
+      if (avatarFile && editPlayer.playerId) {
+        const uploadUrl = await generateUploadUrl()
+        const result = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': avatarFile.type },
+          body: avatarFile,
+        })
+        const { storageId } = await result.json()
+        await updatePlayerAvatar({
+          playerId: editPlayer.playerId,
+          avatarStorageId: storageId
+        })
+      }
+
+      await onSave()
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl">
+      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl max-h-[90vh] overflow-y-auto">
         <h3 className="text-xl font-bold mb-4">Edit Member</h3>
         <div className="space-y-4">
+          {/* Avatar Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : currentAvatarUrl ? (
+                  <img src={currentAvatarUrl} alt="Current" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl text-gray-400">👤</span>
+                )}
+              </div>
+              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border-2 border-gray-300 text-sm font-medium text-gray-700 transition-all">
+                Change Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Player Name</label>
             <input
@@ -582,14 +743,16 @@ function EditPlayerModal({
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+              disabled={uploading}
             >
               Cancel
             </button>
             <button
-              onClick={onSave}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold"
+              onClick={handleSave}
+              disabled={uploading}
+              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
             >
-              Save Changes
+              {uploading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>

@@ -26,5 +26,6 @@ export default defineSchema({
       x: v.number(),
       y: v.number(),
     })),
+    avatarStorageId: v.optional(v.id('_storage')),
   }),
 })

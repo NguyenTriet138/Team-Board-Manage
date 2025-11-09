@@ -23,6 +23,7 @@ interface Player {
   number: number
   isSubstitute: boolean
   formationPosition?: Position
+  avatarStorageId?: Id<'_storage'>
 }
 
 interface Team {
@@ -224,7 +225,7 @@ export function HomePage() {
                         await arrangePlayersInFormation(formation)
                       }
                     }}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="my-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-1"
                   >
                     <option value="">Select Formation</option>
                     {formations[selectedTeam.sport].map((formation) => (
@@ -343,18 +344,13 @@ export function HomePage() {
                           isSubstitute: player.isSubstitute
                         })
                       }}
-                      className="absolute bg-white shadow-md rounded-full p-2 cursor-move transform -translate-x-1/2 -translate-y-1/2 select-none hover:bg-blue-50"
+                      className="absolute cursor-move transform -translate-x-1/2 -translate-y-1/2 select-none hover:scale-110 transition-transform"
                       style={{
                         left: `${player.formationPosition?.x ?? 50}%`,
                         top: `${player.formationPosition?.y ?? 50}%`
                       }}
                     >
-                      <div className="font-medium text-sm">
-                        {player.number} - {player.name}
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        {player.position}
-                      </div>
+                      <PlayerAvatar player={player} />
                     </div>
                   ))}
                 </div>
@@ -403,9 +399,9 @@ export function HomePage() {
                               isSubstitute: player.isSubstitute
                             })
                           }}
-                          className="px-3 py-2 bg-gray-100 rounded-full text-sm cursor-move hover:bg-gray-200"
+                          className="cursor-move hover:scale-105 transition-transform"
                         >
-                          {player.number} - {player.name}
+                          <PlayerAvatar player={player} />
                         </div>
                       ))}
                     {(!players || players.filter((p) => p.isSubstitute).length === 0) && (
@@ -535,6 +531,40 @@ export function HomePage() {
           }}
         />
       )}
+    </div>
+  )
+}
+
+function PlayerAvatar({ player }: { player: Player }) {
+  const avatarUrl = useQuery(
+    api.teams.getAvatarUrl,
+    player.avatarStorageId ? { storageId: player.avatarStorageId } : "skip"
+  )
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      {/* Avatar Circle with Jersey Number Badge */}
+      <div className="relative">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={player.name}
+            className="w-16 h-16 rounded-full object-cover border-3 border-white shadow-lg"
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-2xl border-3 border-white shadow-lg">
+            {player.name.charAt(0).toUpperCase()}
+          </div>
+        )}
+        {/* Jersey Number Badge */}
+        <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs font-bold border-2 border-white shadow-md">
+          {player.number}
+        </div>
+      </div>
+      {/* Player Name */}
+      <div className="bg-white bg-opacity-90 px-2 py-1 rounded-full shadow-md">
+        <div className="text-xs font-semibold text-gray-800">{player.name}</div>
+      </div>
     </div>
   )
 }
