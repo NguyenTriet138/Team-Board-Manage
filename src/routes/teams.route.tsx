@@ -71,31 +71,32 @@ export function TeamsPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-xl">Please log in to manage your teams.</p>
+      <div className="flex items-center justify-center h-screen bg-[#1e293b]">
+        <p className="text-xl text-slate-300">Please log in to manage your teams.</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Team Management</h1>
-          <button
-            onClick={() => setShowNewTeamForm(true)}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-semibold"
-          >
-            + Create New Team
-          </button>
-        </div>
-
-        {teams && teams.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            <p className="text-lg mb-2">No teams yet</p>
-            <p className="text-sm">Create your first team to get started!</p>
+    <div className="min-h-screen bg-[#1e293b] px-4 py-8">
+      <div className="container mx-auto">
+        <div className="bg-[#0f172a] rounded-lg shadow-xl p-6 border border-slate-700">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-white">Team Management</h1>
+            <button
+              onClick={() => setShowNewTeamForm(true)}
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-lg hover:from-emerald-600 hover:to-emerald-700 font-semibold shadow-lg shadow-emerald-500/30 transition"
+            >
+              + Create New Team
+            </button>
           </div>
-        )}
+
+          {teams && teams.length === 0 && (
+            <div className="text-center py-12 text-slate-500">
+              <p className="text-lg mb-2">No teams yet</p>
+              <p className="text-sm">Create your first team to get started!</p>
+            </div>
+          )}
 
         <div className="space-y-4">
           {teams?.map((team) => (
@@ -200,6 +201,7 @@ export function TeamsPage() {
           }}
         />
       )}
+      </div>
     </div>
   )
 }
@@ -226,29 +228,29 @@ function TeamSection({
   const totalPlayers = players?.length ?? 0
 
   return (
-    <div className="border-2 border-gray-200 rounded-lg overflow-hidden transition-all hover:shadow-lg">
+    <div className="border-2 border-slate-700 rounded-lg overflow-hidden transition-all hover:shadow-xl hover:shadow-emerald-500/10">
       {/* Team Header - Clickable Box */}
       <div
         onClick={onToggle}
-        className="bg-gradient-to-r from-blue-50 to-blue-100 p-5 cursor-pointer hover:from-blue-100 hover:to-blue-150 transition-all"
+        className="bg-gradient-to-r from-slate-800 to-slate-900 p-5 cursor-pointer hover:from-slate-700 hover:to-slate-800 transition-all"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="text-2xl transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <div className="text-2xl text-emerald-400 transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               ▶
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">{team.name}</h2>
-              <p className="text-sm text-gray-600 capitalize mt-1">
+              <h2 className="text-2xl font-bold text-white">{team.name}</h2>
+              <p className="text-sm text-slate-400 capitalize mt-1">
                 {team.sport} • {totalPlayers} {totalPlayers === 1 ? 'member' : 'members'}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
+            <div className="bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
               {startingPlayers.length} Starting
             </div>
-            <div className="bg-gray-400 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
+            <div className="bg-slate-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
               {substitutePlayers.length} Subs
             </div>
           </div>
@@ -257,24 +259,24 @@ function TeamSection({
 
       {/* Team Content - Expandable */}
       {isExpanded && (
-        <div className="p-6 bg-white border-t-2 border-gray-100">
+        <div className="p-6 bg-[#0f172a] border-t-2 border-slate-700">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-700">Team Members</h3>
+            <h3 className="text-xl font-semibold text-slate-200">Team Members</h3>
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 onAddPlayer()
               }}
-              className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 font-semibold shadow-md transition-all hover:shadow-lg"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-5 py-2 rounded-lg hover:from-emerald-600 hover:to-emerald-700 font-semibold shadow-lg shadow-emerald-500/30 transition"
             >
               + Add Member
             </button>
           </div>
 
           {players && players.length === 0 && (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-              <p className="text-gray-400 text-lg">No members in this team yet.</p>
-              <p className="text-sm text-gray-400 mt-2">Click "Add Member" to get started!</p>
+            <div className="text-center py-12 bg-[#1e293b] rounded-lg border-2 border-dashed border-slate-600">
+              <p className="text-slate-400 text-lg">No members in this team yet.</p>
+              <p className="text-sm text-slate-500 mt-2">Click "Add Member" to get started!</p>
             </div>
           )}
 
@@ -283,9 +285,9 @@ function TeamSection({
               {/* Starting Players */}
               {startingPlayers.length > 0 && (
                 <div>
-                  <h4 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-100 px-3 py-1 rounded-lg">Starting Lineup</span>
-                    <span className="text-sm text-gray-500">({startingPlayers.length})</span>
+                  <h4 className="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2">
+                    <span className="bg-emerald-900/40 px-3 py-1 rounded-lg border border-emerald-700">Starting Lineup</span>
+                    <span className="text-sm text-slate-500">({startingPlayers.length})</span>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {startingPlayers.map((player) => (
@@ -303,9 +305,9 @@ function TeamSection({
               {/* Substitute Players */}
               {substitutePlayers.length > 0 && (
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-600 mb-4 flex items-center gap-2">
-                    <span className="bg-gray-100 px-3 py-1 rounded-lg">Substitutes</span>
-                    <span className="text-sm text-gray-500">({substitutePlayers.length})</span>
+                  <h4 className="text-lg font-semibold text-slate-400 mb-4 flex items-center gap-2">
+                    <span className="bg-slate-800 px-3 py-1 rounded-lg border border-slate-600">Substitutes</span>
+                    <span className="text-sm text-slate-500">({substitutePlayers.length})</span>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {substitutePlayers.map((player) => (
@@ -342,27 +344,27 @@ function PlayerCard({
   )
 
   return (
-    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
+    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg border-2 border-slate-700 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20 transition-all">
       <div className="flex items-center gap-4">
         <div className="relative">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={player.name}
-              className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-md"
+              className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 shadow-md"
             />
           ) : (
-            <div className="bg-white border-2 border-blue-500 rounded-full w-14 h-14 flex items-center justify-center font-bold text-xl text-blue-600 shadow-md">
+            <div className="bg-slate-700 border-2 border-emerald-500 rounded-full w-14 h-14 flex items-center justify-center font-bold text-xl text-emerald-400 shadow-md">
               {player.name.charAt(0).toUpperCase()}
             </div>
           )}
-          <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-white">
+          <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-slate-900">
             {player.number}
           </div>
         </div>
         <div>
-          <div className="font-semibold text-gray-800 text-lg">{player.name}</div>
-          <div className="text-sm text-gray-600">{player.position}</div>
+          <div className="font-semibold text-white text-lg">{player.name}</div>
+          <div className="text-sm text-slate-400">{player.position}</div>
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -371,7 +373,7 @@ function PlayerCard({
             e.stopPropagation()
             onEdit(player)
           }}
-          className="text-blue-500 hover:text-blue-700 font-medium text-sm px-4 py-2 rounded-lg hover:bg-blue-100 transition-all"
+          className="text-blue-400 hover:text-blue-300 font-medium text-sm px-4 py-2 rounded-lg hover:bg-blue-900/30 transition-all"
         >
           ✏️ Edit
         </button>
@@ -380,7 +382,7 @@ function PlayerCard({
             e.stopPropagation()
             onDelete(player._id)
           }}
-          className="text-red-500 hover:text-red-700 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-100 transition-all"
+          className="text-red-400 hover:text-red-300 font-medium text-sm px-4 py-2 rounded-lg hover:bg-red-900/30 transition-all"
         >
           🗑️ Delete
         </button>
@@ -401,25 +403,25 @@ function NewTeamModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl">
-        <h3 className="text-xl font-bold mb-4">Create New Team</h3>
+      <div className="bg-[#0f172a] rounded-lg p-6 w-96 shadow-2xl border border-slate-700">
+        <h3 className="text-xl font-bold mb-4 text-white">Create New Team</h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Team Name</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Team Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
               placeholder="Enter team name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Sport</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Sport</label>
             <select
               value={sport}
               onChange={(e) => setSport(e.target.value as Sport)}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             >
               <option value="football">Football</option>
               <option value="volleyball">Volleyball</option>
@@ -429,7 +431,7 @@ function NewTeamModal({
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+              className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 font-medium transition"
             >
               Cancel
             </button>
@@ -440,7 +442,7 @@ function NewTeamModal({
                 }
               }}
               disabled={!name.trim()}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
+              className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed font-semibold shadow-lg shadow-emerald-500/30 transition"
             >
               Create Team
             </button>
@@ -508,21 +510,21 @@ function NewPlayerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-bold mb-4">Add New Member</h3>
+      <div className="bg-[#0f172a] rounded-lg p-6 w-96 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4 text-white">Add New Member</h3>
         <div className="space-y-4">
           {/* Avatar Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Avatar</label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-2 border-slate-600 overflow-hidden bg-[#1e293b] flex items-center justify-center">
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl text-gray-400">👤</span>
+                  <span className="text-3xl text-slate-500">👤</span>
                 )}
               </div>
-              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border-2 border-gray-300 text-sm font-medium text-gray-700 transition-all">
+              <label className="cursor-pointer bg-[#1e293b] hover:bg-slate-700 px-4 py-2 rounded-lg border-2 border-slate-600 text-sm font-medium text-slate-300 transition-all">
                 Choose Image
                 <input
                   type="file"
@@ -535,21 +537,21 @@ function NewPlayerModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Player Name</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Player Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
               placeholder="Enter player name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Position</label>
             <select
               value={position}
               onChange={(e) => setPosition(e.target.value)}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             >
               {sportPositions[sport].map((pos) => (
                 <option key={pos} value={pos}>
@@ -559,14 +561,14 @@ function NewPlayerModal({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Jersey Number</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Jersey Number</label>
             <input
               type="number"
               value={number}
               onChange={(e) => setNumber(parseInt(e.target.value))}
               min="1"
               max="99"
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             />
           </div>
           <div>
@@ -575,15 +577,15 @@ function NewPlayerModal({
                 type="checkbox"
                 checked={isSubstitute}
                 onChange={(e) => setIsSubstitute(e.target.checked)}
-                className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                className="rounded border-slate-600 bg-[#1e293b] text-emerald-500 focus:ring-emerald-500"
               />
-              <span className="ml-2 text-sm text-gray-600">Substitute Player</span>
+              <span className="ml-2 text-sm text-slate-400">Substitute Player</span>
             </label>
           </div>
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+              className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 font-medium transition"
               disabled={uploading}
             >
               Cancel
@@ -591,7 +593,7 @@ function NewPlayerModal({
             <button
               onClick={handleCreate}
               disabled={!name.trim() || uploading}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
+              className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed font-semibold shadow-lg shadow-emerald-500/30 transition"
             >
               {uploading ? 'Uploading...' : 'Add Member'}
             </button>
@@ -666,23 +668,23 @@ function EditPlayerModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-bold mb-4">Edit Member</h3>
+      <div className="bg-[#0f172a] rounded-lg p-6 w-96 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4 text-white">Edit Member</h3>
         <div className="space-y-4">
           {/* Avatar Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Avatar</label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-2 border-slate-600 overflow-hidden bg-[#1e293b] flex items-center justify-center">
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
                 ) : currentAvatarUrl ? (
                   <img src={currentAvatarUrl} alt="Current" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl text-gray-400">👤</span>
+                  <span className="text-3xl text-slate-500">👤</span>
                 )}
               </div>
-              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border-2 border-gray-300 text-sm font-medium text-gray-700 transition-all">
+              <label className="cursor-pointer bg-[#1e293b] hover:bg-slate-700 px-4 py-2 rounded-lg border-2 border-slate-600 text-sm font-medium text-slate-300 transition-all">
                 Change Image
                 <input
                   type="file"
@@ -695,20 +697,20 @@ function EditPlayerModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Player Name</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Player Name</label>
             <input
               type="text"
               value={editPlayer.name}
               onChange={(e) => onChange({ ...editPlayer, name: e.target.value })}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Position</label>
             <select
               value={editPlayer.position}
               onChange={(e) => onChange({ ...editPlayer, position: e.target.value })}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             >
               {sportPositions[sport].map((pos) => (
                 <option key={pos} value={pos}>
@@ -718,14 +720,14 @@ function EditPlayerModal({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Jersey Number</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Jersey Number</label>
             <input
               type="number"
               value={editPlayer.number}
               onChange={(e) => onChange({ ...editPlayer, number: parseInt(e.target.value) })}
               min="1"
               max="99"
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-lg bg-[#1e293b] border border-slate-600 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
             />
           </div>
           <div>
@@ -734,15 +736,15 @@ function EditPlayerModal({
                 type="checkbox"
                 checked={editPlayer.isSubstitute}
                 onChange={(e) => onChange({ ...editPlayer, isSubstitute: e.target.checked })}
-                className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                className="rounded border-slate-600 bg-[#1e293b] text-emerald-500 focus:ring-emerald-500"
               />
-              <span className="ml-2 text-sm text-gray-600">Substitute Player</span>
+              <span className="ml-2 text-sm text-slate-400">Substitute Player</span>
             </label>
           </div>
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+              className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 font-medium transition"
               disabled={uploading}
             >
               Cancel
@@ -750,7 +752,7 @@ function EditPlayerModal({
             <button
               onClick={handleSave}
               disabled={uploading}
-              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
+              className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed font-semibold shadow-lg shadow-emerald-500/30 transition"
             >
               {uploading ? 'Saving...' : 'Save Changes'}
             </button>
@@ -770,12 +772,12 @@ function DeleteConfirmationModal({
 }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 shadow-2xl">
+      <div className="bg-[#0f172a] rounded-lg p-6 w-96 shadow-2xl border border-slate-700">
         <div className="flex items-start gap-3 mb-4">
           <span className="text-3xl">⚠️</span>
           <div>
-            <h3 className="text-xl font-bold text-red-600">Delete Member</h3>
-            <p className="text-sm text-gray-600 mt-2">
+            <h3 className="text-xl font-bold text-red-400">Delete Member</h3>
+            <p className="text-sm text-slate-400 mt-2">
               Are you sure you want to delete this member? This action cannot be undone.
             </p>
           </div>
@@ -783,13 +785,13 @@ function DeleteConfirmationModal({
         <div className="flex justify-end gap-3 mt-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium"
+            className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 font-medium transition"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 font-semibold"
+            className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold transition"
           >
             Delete Member
           </button>
